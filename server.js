@@ -2,7 +2,8 @@ const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
-const path = require("path");
+// const path = require("path");
+const cTable = require('console.table');
 const fs = require("fs");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
@@ -17,48 +18,32 @@ let empArr=[];
 function init() {
     inquirer
         .prompt([
-            {
-                type: "input",
-                message: "What is your name?",
-                name: "name"
-              },
-              {
-                type: "input",
-                message: "What is your id?",
-                name: "id"
-              },
-              {
-                type: "input",
-                message: "What is your email?",
-                name: "email"
-              },
               {
                 type: "list",
                 name: "role",
-                message: "Select role:",
-                choices: ["manager","engineer","intern"]
+                message: "What would you like to do",
+                choices: ["View all Employees","View all Employees by Department","View all Employees by Manager", "Add Employee","Add Department", "Add Role", "Update Employee Role",]
               },
         ])
         .then(function(response) {
-            if(response.role === "manager"){
-                inquirer.prompt([
+            if(response.role === "View all Employees"){
+                console.table([
                     {
-                        type: "input",
-                        name: "officeNumber",
-                        message: "what is your office number?",
+                      name: 'foo',
+                      age: 10
+                    }, {
+                      name: 'bar',
+                      age: 20
                     }
-                ])
-                .then(function(managerResult) {
-                    let newManager= new Manager(response.name, response.id, response.email, managerResult.officeNumber);
+                  ])                  
+                .then(function(allEmpData) {
+                    let allEmp= new Manager(response.name, response.id, response.email, managerResult.officeNumber);
                     console.log(newManager);
-                    empArr.push(newManager);
                     // console.log(managerresult);
                     // console.log(response);
-                    addNewEmployee();
-
                 });
             }
-            else if (response.role==="engineer"){
+            else if (response.role==="View all Employees by Department"){
                 inquirer.prompt([
                     {
                         type: "input",
@@ -74,7 +59,67 @@ function init() {
 
                 });
             }
-            else if (response.role==="intern"){
+            else if (response.role==="View all Employees by Manager"){
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        name: "school",
+                        message: "what is your school?",
+                    }
+                ])
+                .then(function(internResult) {
+                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
+                    console.log(newIntern);
+                    empArr.push(newIntern);
+                    addNewEmployee();
+                });
+            }
+            else if (response.role==="Add Employee"){
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        name: "school",
+                        message: "what is your school?",
+                    }
+                ])
+                .then(function(internResult) {
+                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
+                    console.log(newIntern);
+                    empArr.push(newIntern);
+                    addNewEmployee();
+                });
+            }
+            else if (response.role==="Add Department"){
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        name: "school",
+                        message: "what is your school?",
+                    }
+                ])
+                .then(function(internResult) {
+                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
+                    console.log(newIntern);
+                    empArr.push(newIntern);
+                    addNewEmployee();
+                });
+            }
+            else if (response.role==="Add Role"){
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        name: "school",
+                        message: "what is your school?",
+                    }
+                ])
+                .then(function(internResult) {
+                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
+                    console.log(newIntern);
+                    empArr.push(newIntern);
+                    addNewEmployee();
+                });
+            }
+            else if (response.role==="Update Employee Role"){
                 inquirer.prompt([
                     {
                         type: "input",
