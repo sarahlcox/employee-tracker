@@ -68,8 +68,22 @@ function addNewDepartment(){
 	])
 	.then(function(departmentResult) {
 		var newDepartment = new Department(departmentResult.name);
-
-	});
+        var query = connection.query(
+              "INSERT INTO department SET ?",
+              {
+                name: newDepartment.name,
+              },
+              function(err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " product inserted!\n");
+                // Call updateProduct AFTER the INSERT completes
+                updateProduct();
+              }
+            );
+          
+            // logs the actual query being run
+            console.log(query.sql);
+          
 }
 
 
@@ -137,6 +151,11 @@ function addNewEmployee(){
 
 
 function viewDepartments(){
+    connection.query("SELECT * FROM department", function(err, data) {
+        if (err) throw err;
+        console.table(data);
+
+      });
 
 }
 
@@ -159,6 +178,11 @@ function viewRoles(){
 
 
 function viewEmployees(){
+    connection.query("SELECT * FROM employee", function(err, data) {
+        if (err) throw err;
+        console.table(data);
+
+      });
 
 }
 
