@@ -1,3 +1,4 @@
+// install dependencies
 const Department = require("./lib/Department");
 const Role = require("./lib/Role");
 const Employee = require("./lib/Employee");
@@ -5,7 +6,7 @@ const mysql = require("mysql")
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-
+// establish connection to mysql, and correct db 
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -25,7 +26,7 @@ connection.connect(function(err) {
 
   
 function init() {
-
+// prompt the user to tell the program what to do using inquirer then depending on what they choose run that fx
 	inquirer
         .prompt([{
 			type: "list",
@@ -57,7 +58,7 @@ function init() {
 		});
 }
 
-
+// Adds new department **Still need to complete**
 function addNewDepartment(){
 	inquirer.prompt([
 		{
@@ -68,25 +69,15 @@ function addNewDepartment(){
 	])
 	.then(function(departmentResult) {
 		var newDepartment = new Department(departmentResult.name);
-        var query = connection.query(
-              "INSERT INTO department SET ?",
-              {
-                name: newDepartment.name,
-              },
-              function(err, res) {
-                if (err) throw err;
-                console.log(res.affectedRows + " product inserted!\n");
-                // Call updateProduct AFTER the INSERT completes
-                updateProduct();
+
               }
             );
           
             // logs the actual query being run
-            console.log(query.sql);
           
 }
 
-
+// Adds new role **Still need to complete**
 function addNewRole(){
 	var departmentList = [{name: "Test Dept", value: 1}, {name: "Dept Test", value: 2}];
 
@@ -114,7 +105,7 @@ function addNewRole(){
 	});
 }
 
-
+// Adds new employee **Still need to complete**
 function addNewEmployee(){
 	var roleList = [{name: "Test Role", value: 1}, {name: "Role Test", value: 2}];
 	var employeeList = [{name: "None", value: null}];
@@ -149,7 +140,7 @@ function addNewEmployee(){
 	});
 }
 
-
+// Query search to view all departments 
 function viewDepartments(){
     connection.query("SELECT * FROM department", function(err, data) {
         if (err) throw err;
@@ -159,8 +150,9 @@ function viewDepartments(){
 
 }
 
-
+// Query search to view all roles using inner join from department table and role table. 
 function viewRoles(){
+    // variable that concatenates the inner join my sql command
     var sql="SELECT role.title, role.salary, department.name AS departmentName FROM role";
     sql+=" INNER JOIN department";
     sql+=" ON (department.id=role.department_id)";
@@ -176,7 +168,7 @@ function viewRoles(){
       });
 }
 
-
+// Query search to view all employees
 function viewEmployees(){
     connection.query("SELECT * FROM employee", function(err, data) {
         if (err) throw err;
@@ -186,7 +178,7 @@ function viewEmployees(){
 
 }
 
-
+// update Employee Role **Still need to complete**
 function updateEmployeeRole(){
 
 }
