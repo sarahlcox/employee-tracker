@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "password",
-    database: "cat_db"
+    database: "employeeDb"
   });
 
 
@@ -25,14 +25,7 @@ connection.connect(function(err) {
 
   
 function init() {
-    connection.query("SELECT 1 + 1 AS RESULT", function(err, data) {
-        if (err) {
-            throw err;
-        
-        }
-    
-        console.log(data[0].RESULT);
-      });
+
 	inquirer
         .prompt([{
 			type: "list",
@@ -149,7 +142,19 @@ function viewDepartments(){
 
 
 function viewRoles(){
-
+    var sql="SELECT role.title, role.salary, department.name AS departmentName FROM role";
+    sql+=" INNER JOIN department";
+    sql+=" ON (department.id=role.department_id)";
+    sql+=" ORDER BY department.name, role.title"; 
+    connection.query(sql, function(err, data) {
+        if (err) {
+            throw err;
+        
+        }
+        console.table(data);
+    
+        // console.log(data[0].RESULT);
+      });
 }
 
 
