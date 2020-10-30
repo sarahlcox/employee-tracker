@@ -1,170 +1,166 @@
-const Manager = require("./lib/Manager");
-const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern");
+const Department = require("./lib/Department");
+const Role = require("./lib/Role");
+const Employee = require("./lib/Employee");
+const mysql = require("mysql")
 const inquirer = require("inquirer");
-// const path = require("path");
-const cTable = require('console.table');
-const fs = require("fs");
+const cTable = require("console.table");
 
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-const render = require("./lib/htmlRenderer");
+var connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "password",
+    database: "cat_db"
+  });
 
-let empArr=[];
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+connection.connect(function(err) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+    console.log("connected as id " + connection.threadId);
+  });
+
+  
 function init() {
-    inquirer
-        .prompt([
-              {
-                type: "list",
-                name: "role",
-                message: "What would you like to do",
-                choices: ["View all Employees","View all Employees by Department","View all Employees by Manager", "Add Employee","Add Department", "Add Role", "Update Employee Role",]
-              },
-        ])
-        .then(function(response) {
-            if(response.role === "View all Employees"){
-                console.table([
-                    {
-                      name: 'foo',
-                      age: 10
-                    }, {
-                      name: 'bar',
-                      age: 20
-                    }
-                  ])                  
-                .then(function(allEmpData) {
-                    let allEmp= new Manager(response.name, response.id, response.email, managerResult.officeNumber);
-                    console.log(newManager);
-                    // console.log(managerresult);
-                    // console.log(response);
-                });
+    connection.query("SELECT 1 + 1 AS RESULT", function(err, data) {
+        if (err) {
+            throw err;
+        
+        }
+    
+        console.log(data[0].RESULT);
+      });
+	inquirer
+        .prompt([{
+			type: "list",
+			name: "doWhat",
+			message: "What would you like to do",
+			choices: ["Add Department", "Add Role", "Add Employee", "View Departments", "View Roles", "View Employees", "Update Employee Role"]
+		}]).then(function(response) {
+            if( response.doWhat === "Add Department" ){
+				addNewDepartment();
+			}
+            else if ( response.doWhat === "Add Role" ){
+				addNewRole();
             }
-            else if (response.role==="View all Employees by Department"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "github",
-                        message: "what is your github username?",
-                    }
-                ])
-                .then(function(engineerResult) {
-                    var newEngineer= new Engineer(response.name, response.id, response.email, engineerResult.github);
-                    console.log(newEngineer);
-                    empArr.push(newEngineer);
-                    addNewEmployee();
-
-                });
+            else if ( response.doWhat === "Add Employee" ){
+				addNewEmployee();
             }
-            else if (response.role==="View all Employees by Manager"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "school",
-                        message: "what is your school?",
-                    }
-                ])
-                .then(function(internResult) {
-                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
-                    console.log(newIntern);
-                    empArr.push(newIntern);
-                    addNewEmployee();
-                });
+            else if ( response.doWhat === "View Departments" ){
+				viewDepartments();
             }
-            else if (response.role==="Add Employee"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "school",
-                        message: "what is your school?",
-                    }
-                ])
-                .then(function(internResult) {
-                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
-                    console.log(newIntern);
-                    empArr.push(newIntern);
-                    addNewEmployee();
-                });
+            else if ( response.doWhat === "View Roles" ){
+				viewRoles();
             }
-            else if (response.role==="Add Department"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "school",
-                        message: "what is your school?",
-                    }
-                ])
-                .then(function(internResult) {
-                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
-                    console.log(newIntern);
-                    empArr.push(newIntern);
-                    addNewEmployee();
-                });
+            else if ( response.doWhat === "View Employees" ){
+				viewEmployees();
             }
-            else if (response.role==="Add Role"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "school",
-                        message: "what is your school?",
-                    }
-                ])
-                .then(function(internResult) {
-                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
-                    console.log(newIntern);
-                    empArr.push(newIntern);
-                    addNewEmployee();
-                });
+            else if ( response.doWhat === "Update Employee Role" ){
+				updateEmployeeRole();
             }
-            else if (response.role==="Update Employee Role"){
-                inquirer.prompt([
-                    {
-                        type: "input",
-                        name: "school",
-                        message: "what is your school?",
-                    }
-                ])
-                .then(function(internResult) {
-                    var newIntern= new Intern(response.name, response.id, response.email, internResult.school);
-                    console.log(newIntern);
-                    empArr.push(newIntern);
-                    addNewEmployee();
-                });
-            }
-
-          });          
+		});
 }
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+
+function addNewDepartment(){
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "name",
+			message: "What is the department's name?"
+		}
+	])
+	.then(function(departmentResult) {
+		var newDepartment = new Department(departmentResult.name);
+
+	});
+}
+
+
+function addNewRole(){
+	var departmentList = [{name: "Test Dept", value: 1}, {name: "Dept Test", value: 2}];
+
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "title",
+			message: "What is the role's title?"
+		},
+		{
+			type: "input",
+			name: "salary",
+			message: "What is the role's salary?"
+		},
+		{
+			type: "list",
+			name: "department_id",
+			message: "What is the role's department?",
+			choices: departmentList
+		}
+	])
+	.then(function(roleResult) {
+		var newRole = new Role(roleResult.title, roleResult.salary, roleResult.department_id);
+
+	});
+}
+
+
 function addNewEmployee(){
-    inquirer.prompt([
-        {
-            type: "confirm",
-            name: "addanother",
-            message: "Would you like to add an additional employee?",
-        }
-    ])
-    .then(function(response){
-        if(response.addanother===true){
-            init();
-        }
-        else {
-            var teamHtml = render (empArr)
-            fs.writeFileSync("./output/team.html", teamHtml, function(err) {
-                console.log(err);
-        });
-        }
-    })
+	var roleList = [{name: "Test Role", value: 1}, {name: "Role Test", value: 2}];
+	var employeeList = [{name: "None", value: null}];
+
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "first_name",
+			message: "What is the employee's first name?"
+		},
+		{
+			type: "input",
+			name: "last_name",
+			message: "What is the employee's last name?"
+		},
+		{
+			type: "list",
+			name: "role_id",
+			message: "What is the employee's role?",
+			choices: roleList
+		},
+		{
+			type: "list",
+			name: "manager_id",
+			message: "who is the employee's role?",
+			choices: employeeList
+		}
+	])
+	.then(function(employeeResult) {
+		var newEmployee = new Employee(employeeResult.first_name, employeeResult.last_name, employeeResult.role_id, employeeResult.manager_id);
+
+	});
 }
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
+
+function viewDepartments(){
+
+}
+
+
+function viewRoles(){
+
+}
+
+
+function viewEmployees(){
+
+}
+
+
+function updateEmployeeRole(){
+
+}
+
+
 init();
