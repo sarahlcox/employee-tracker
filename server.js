@@ -59,6 +59,30 @@ function init() {
 }
 
 // Adds new department 
+function addNewDepartment(){
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "name",
+			message: "What is the department's name?"
+		}
+	])
+	.then(function(departmentResult) {
+		var newDepartment = new Department(departmentResult.name);
+		connection.query(
+			"INSERT INTO department SET ?",
+			{
+			  name: newDepartment.name,
+			},
+			function(err) {
+			  if (err) throw err;
+			  console.log("Your department was added!");
+				init ();
+			});
+    });          
+}
+
+// Adds new role 
 function addNewRole(){
 	var departmentList = [{name: "Marketing", value: 1}, {name: "Sales", value: 2}, {name: "Accounting", value: 3}];
 
@@ -97,8 +121,7 @@ function addNewRole(){
 	});
 }
 
-
-// Adds new role 
+// Adds new employee 
 function addNewEmployee(){
 	var roleList = [{name: "Marketing Person", value: 1}, {name: "Sales Person", value: 2}, , {name: "Accountant", value: 3} ];
 	var employeeList = [{name: "None", value: null}];
@@ -147,41 +170,6 @@ function addNewEmployee(){
 			  console.log("Your employee was added!");
 				init ();
 			});
-	});
-}
-
-// Adds new employee **Still need to complete**
-function addNewEmployee(){
-	var roleList = [{name: "Test Role", value: 1}, {name: "Role Test", value: 2}];
-	var employeeList = [{name: "None", value: null}];
-
-	inquirer.prompt([
-		{
-			type: "input",
-			name: "first_name",
-			message: "What is the employee's first name?"
-		},
-		{
-			type: "input",
-			name: "last_name",
-			message: "What is the employee's last name?"
-		},
-		{
-			type: "list",
-			name: "role_id",
-			message: "What is the employee's role?",
-			choices: roleList
-		},
-		{
-			type: "list",
-			name: "manager_id",
-			message: "who is the employee's role?",
-			choices: employeeList
-		}
-	])
-	.then(function(employeeResult) {
-		var newEmployee = new Employee(employeeResult.first_name, employeeResult.last_name, employeeResult.role_id, employeeResult.manager_id);
-
 	});
 }
 
