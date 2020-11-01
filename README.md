@@ -12,7 +12,7 @@ This is a node js command line app for an employee tracking system, which allows
 * npm: inquirer, mysql, and console table
 
 ### Technology
-* nodeJS
+* nodeJS, mySQL, Visual Studio Code
 
 ### Contributors
 Sarah Barkley and Elizabeth Reuter 
