@@ -58,28 +58,9 @@ function init() {
 		});
 }
 
-// Adds new department **Still need to complete**
-function addNewDepartment(){
-	inquirer.prompt([
-		{
-			type: "input",
-			name: "name",
-			message: "What is the department's name?"
-		}
-	])
-	.then(function(departmentResult) {
-		var newDepartment = new Department(departmentResult.name);
-
-              }
-            );
-          
-            // logs the actual query being run
-          
-}
-
-// Adds new role **Still need to complete**
+// Adds new department 
 function addNewRole(){
-	var departmentList = [{name: "Test Dept", value: 1}, {name: "Dept Test", value: 2}];
+	var departmentList = [{name: "Marketing", value: 1}, {name: "Sales", value: 2}, {name: "Accounting", value: 3}];
 
 	inquirer.prompt([
 		{
@@ -101,7 +82,71 @@ function addNewRole(){
 	])
 	.then(function(roleResult) {
 		var newRole = new Role(roleResult.title, roleResult.salary, roleResult.department_id);
+		connection.query(
+			"INSERT INTO role SET ?",
+			{
+			  title: newRole.title,
+			  salary: newRole.salary,
+			  department_id: newRole.department_id,
+			},
+			function(err) {
+			  if (err) throw err;
+			  console.log("Your role was added!");
+				init ();
+			});
+	});
+}
 
+
+// Adds new role 
+function addNewEmployee(){
+	var roleList = [{name: "Marketing Person", value: 1}, {name: "Sales Person", value: 2}, , {name: "Accountant", value: 3} ];
+	var employeeList = [{name: "None", value: null}];
+
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "first_name",
+			message: "What is the employee's first name?"
+		},
+		{
+			type: "input",
+			name: "last_name",
+			message: "What is the employee's last name?"
+		},
+		{
+			type: "list",
+			name: "role_id",
+			message: "What is the employee's role?",
+			choices: roleList
+		},
+		{
+			type: "list",
+			name: "manager_id",
+			message: "Who is the employee's manager?",
+			choices: employeeList
+		}
+	])
+	.then(function(employeeResult) {
+		var newEmployee = new Employee(employeeResult.first_name, employeeResult.last_name, employeeResult.role_id, employeeResult.manager_id);
+		console.log(newEmployee.manager_id);
+		if (newEmployee.manager_id === null) {
+			newEmployee.manager_id = 5;
+		}
+		console.log(newEmployee.manager_id);
+		connection.query(
+			"INSERT INTO employee SET ?",
+			{
+			  first_name: newEmployee.first_name,
+			  last_name: newEmployee.last_name,
+			  role_id: newEmployee.role_id,
+			  manager_id: newEmployee.manager_id,
+			},
+			function(err) {
+			  if (err) throw err;
+			  console.log("Your employee was added!");
+				init ();
+			});
 	});
 }
 
