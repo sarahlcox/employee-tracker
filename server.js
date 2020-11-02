@@ -40,7 +40,6 @@ function init() {
             else if ( response.doWhat === "Add Role" ){
 				connection.query("SELECT name, id AS value FROM department", function(err, data) {
 					if (err) throw err;
-					console.log(data);
 					addNewRole(data);
 				  });
 				
@@ -48,11 +47,9 @@ function init() {
             else if ( response.doWhat === "Add Employee" ){
 				connection.query("SELECT title AS name, id AS value FROM role", function(err, roleData) {
 					if (err) throw err;
-					console.log(roleData);
 					connection.query("SELECT CONCAT(first_name,' ', last_name) AS name, id AS value FROM employee", function(err, empData) {
 						if (err) throw err;
 						empData.push({name:"none", value:null});
-						console.log(empData);
 					addNewEmployee(roleData,empData);
 					});
 				});
@@ -168,7 +165,6 @@ function addNewEmployee(roleList,employeeList){
 	])
 	.then(function(employeeResult) {
 		var newEmployee = new Employee(employeeResult.first_name, employeeResult.last_name, employeeResult.role_id, employeeResult.manager_id);
-		console.log(newEmployee.manager_id);
 		connection.query(
 			"INSERT INTO employee SET ?",
 			{
@@ -246,7 +242,6 @@ function updateEmployeeRole(roleList, employeeList){
 		},
 	])
 	.then(function(updatedResult) {
-		console.log(updatedResult);
 		let data=[{role_id:updatedResult.role_id},{id:updatedResult.employee_id},];
 		connection.query(
 			'UPDATE employee SET ? WHERE ?',
